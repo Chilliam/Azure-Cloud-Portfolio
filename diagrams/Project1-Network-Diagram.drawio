@@ -1,0 +1,90 @@
+<mxfile host="app.diagrams.net" version="24.0.0">
+  <diagram name="Project 1 - Core Infrastructure" id="project1-diagram">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Internet cloud -->
+        <mxCell id="internet" value="Internet" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Load Balancer -->
+        <mxCell id="lb" value="Load Balancer&#10;lb-web&#10;(Public IP: pip-lb-web)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="60" width="170" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Resource Group boundary -->
+        <mxCell id="rg" value="Resource Group: rg-project1-dev" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fontStyle=1;fontSize=13;fillColor=none;strokeColor=#666666;dashed=1;spacingTop=6;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="620" height="640" as="geometry" />
+        </mxCell>
+
+        <!-- VNet boundary -->
+        <mxCell id="vnet" value="VNet: vnet-project1  (10.0.0.0/16)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fontStyle=1;fontSize=12;fillColor=#f5f5f5;strokeColor=#999999;spacingTop=6;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="530" y="60" width="560" height="560" as="geometry" />
+        </mxCell>
+
+        <!-- Web subnet boundary -->
+        <mxCell id="websubnet" value="web-subnet (10.0.1.0/24)&#10;NSG: nsg-web&#10;Allow: HTTP 80 (Any) | SSH 22 (My IP)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fontStyle=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;spacingTop=6;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="560" y="110" width="500" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- Web VM 1 -->
+        <mxCell id="vmweb1" value="vm-web-01&#10;(Nginx)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="170" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Web VM 2 (optional) -->
+        <mxCell id="vmweb2" value="vm-web-02&#10;(Nginx, optional)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;dashed=1;fontSize=12;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="800" y="170" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Data subnet boundary -->
+        <mxCell id="datasubnet" value="data-subnet (10.0.2.0/24)&#10;NSG: nsg-data&#10;Allow: 3306 from 10.0.1.0/24 only | Deny all else" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fontStyle=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;spacingTop=6;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="560" y="340" width="500" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Data VM -->
+        <mxCell id="vmdata" value="vm-data-01&#10;(No public IP)&#10;Private IP: 10.0.2.4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="400" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Notes box -->
+        <mxCell id="notes" value="Verification checklist:&#10;✓ Browser to LB public IP shows web page&#10;✓ Direct SSH to 10.0.2.4 from local machine FAILS&#10;✓ SSH to 10.0.2.4 succeeds only via jump through vm-web-01&#10;✓ nsg-data deny-all rule confirmed active" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="560" y="520" width="500" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Edge: Internet -> LB -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;endArrow=block;" edge="1" parent="1" source="internet" target="lb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Edge: LB -> Web VM 1 -->
+        <mxCell id="e2" value="HTTP 80" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;endArrow=block;" edge="1" parent="1" source="lb" target="vmweb1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Edge: LB -> Web VM 2 -->
+        <mxCell id="e3" value="HTTP 80" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;endArrow=block;dashed=1;" edge="1" parent="1" source="lb" target="vmweb2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Edge: Web VM 1 -> Data VM -->
+        <mxCell id="e4" value="Allowed: 3306&#10;(from web subnet only)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;endArrow=block;strokeColor=#82b366;fontColor=#82b366;" edge="1" parent="1" source="vmweb1" target="vmdata">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Edge: Internet -> Data VM (blocked) -->
+        <mxCell id="e5" value="✕ Blocked&#10;(no public IP,&#10;deny-all NSG)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;endArrow=block;strokeColor=#b85450;fontColor=#b85450;dashed=1;" edge="1" parent="1" source="internet" target="vmdata">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="110" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
