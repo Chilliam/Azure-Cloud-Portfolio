@@ -1,0 +1,4 @@
+"User","Action","Reason"
+"erin@yourtenant.onmicrosoft.com","Failed","az ad user create failed"
+"frank@yourtenant.onmicrosoft.com","Failed","az ad user create failed"
+"grace@yourtenant.onmicrosoft.com","Failed","az ad user create failed"
