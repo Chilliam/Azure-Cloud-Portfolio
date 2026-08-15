@@ -1,0 +1,48 @@
+{
+  "eTag": null,
+  "id": "/subscriptions/b5b6fdda-4ba6-4831-9aaa-4c63754f2653/resourceGroups/rg-project3-tf-dev/providers/Microsoft.RecoveryServices/vaults/rsv-project6-dev/backupPolicies/DefaultPolicy",
+  "location": null,
+  "name": "DefaultPolicy",
+  "properties": {
+    "backupManagementType": "AzureIaasVM",
+    "instantRpDetails": {
+      "azureBackupRgNamePrefix": null,
+      "azureBackupRgNameSuffix": null
+    },
+    "instantRpRetentionRangeInDays": 2,
+    "policyType": "V1",
+    "protectedItemsCount": 0,
+    "resourceGuardOperationRequests": null,
+    "retentionPolicy": {
+      "dailySchedule": {
+        "retentionDuration": {
+          "count": 30,
+          "durationType": "Days"
+        },
+        "retentionTimes": [
+          "2026-08-13T13:30:00+00:00"
+        ]
+      },
+      "monthlySchedule": null,
+      "retentionPolicyType": "LongTermRetentionPolicy",
+      "weeklySchedule": null,
+      "yearlySchedule": null
+    },
+    "schedulePolicy": {
+      "hourlySchedule": null,
+      "schedulePolicyType": "SimpleSchedulePolicy",
+      "scheduleRunDays": null,
+      "scheduleRunFrequency": "Daily",
+      "scheduleRunTimes": [
+        "2026-08-13T13:30:00+00:00"
+      ],
+      "scheduleWeeklyFrequency": 0
+    },
+    "snapshotConsistencyType": null,
+    "tieringPolicy": null,
+    "timeZone": "UTC"
+  },
+  "resourceGroup": "rg-project3-tf-dev",
+  "tags": null,
+  "type": "Microsoft.RecoveryServices/vaults/backupPolicies"
+}
