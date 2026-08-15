@@ -20,3 +20,5 @@ variable "ssh_public_key" {
   type        = string
   sensitive   = true
 }
+
+# this is a comment
