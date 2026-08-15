@@ -52,6 +52,10 @@ This project configured Azure Backup on the data-tier VM from Project 3, and —
 **Problem:** While validating VM state during backup/restore work, the Project 4 auto-shutdown schedule (traced back to Azure Lab Services' first-party identity, per the Project 5 investigation) deallocated `vm-web-dev` at its normal 11 PM trigger — a separate, unrelated event that could easily be mistaken for a backup/restore side effect if the timing wasn't checked carefully.
 **Fix:** Cross-referenced the Activity Log timestamp against actual commands run, confirming it was the routine scheduled shutdown and not something caused by the backup/restore testing. Noted that auto-shutdown schedules are worth temporarily disabling during any test that depends on precise VM state (like a DR failover simulation), to avoid ambiguous results.
 
+### 6. Push rejected due to diverged local and remote history
+**Problem:** `git push` to the consolidated `azure-cloud-portfolio` repo failed with `[rejected] main -> main (fetch first)`, since the remote repository contained commits (from the earlier subtree consolidation work) that weren't present in the local working copy.
+**Fix:** Ran `git pull origin main` to bring the remote's existing history into the local repo before pushing again, rather than force-pushing over it — confirmed afterward that both the newly-added `06-backup-dr/` folder and the previously-consolidated project folders were all present, avoiding any accidental loss of earlier work.
+
 ---
 
 ## What We Learned
@@ -61,6 +65,7 @@ This project configured Azure Backup on the data-tier VM from Project 3, and —
 - **Not every parameter belongs on every subcommand, even within the same command family.** `az backup policy` has several subcommands that share some flags but not others — worth checking a command's actual accepted parameters rather than assuming consistency across a whole command group.
 - **Long-running Azure operations (restores, backups) need to be trusted to actually take time**, not treated as stuck the moment they don't return instantly — checking job status is the correct diagnostic step, not immediately retrying or cancelling.
 - **Automation built in earlier projects can interfere with testing in later ones.** The Project 4 auto-shutdown schedule firing mid-test in this project is a direct, concrete example of why documenting cross-project dependencies (as the portfolio's master README already does) matters beyond just narrative — it has real operational consequences during hands-on work.
+- **A rejected push isn't data loss — it's Git protecting history that already diverged.** Pulling before pushing (rather than force-pushing) preserved the earlier consolidation work already on the remote while still successfully adding this project's new folder, reinforcing the same discipline used throughout this portfolio: understand what a warning/error is actually protecting against before working around it.
 
 ---
 
