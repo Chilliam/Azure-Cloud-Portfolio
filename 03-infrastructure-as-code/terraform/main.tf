@@ -19,7 +19,7 @@ resource "azurerm_resource_group" "rg" {
 resource "azurerm_virtual_network" "vnet" {
   name                = "vnet-${var.environment_name}"
   location            = azurerm_resource_group.rg.location
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name = azurerm_resource_group.rg.name
   address_space       = ["10.0.0.0/16"]
 }
 
@@ -128,7 +128,7 @@ resource "azurerm_network_interface" "web_nic" {
   ip_configuration {
     name                          = "ipconfig1"
     subnet_id                     = azurerm_subnet.web.id
-    private_ip_address_allocation = "Dynamic"    
+    private_ip_address_allocation = "Dynamic"
   }
 }
 
@@ -145,11 +145,11 @@ resource "azurerm_network_interface" "data_nic" {
 }
 
 resource "azurerm_linux_virtual_machine" "web_vm" {
-  name                = "vm-web-${var.environment_name}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  size                = "Standard_DC1ds_v3"
-  admin_username      = var.admin_username
+  name                  = "vm-web-${var.environment_name}"
+  location              = azurerm_resource_group.rg.location
+  resource_group_name   = azurerm_resource_group.rg.name
+  size                  = "Standard_DC1ds_v3"
+  admin_username        = var.admin_username
   network_interface_ids = [azurerm_network_interface.web_nic.id]
 
   admin_ssh_key {
@@ -183,12 +183,12 @@ resource "azurerm_network_interface" "web2_nic" {
 }
 
 resource "azurerm_linux_virtual_machine" "web2_vm" {
-  name                   = "vm-web2-${var.environment_name}"
-  location               = azurerm_resource_group.rg.location
-  resource_group_name    = azurerm_resource_group.rg.name
-  size                   = "Standard_B1s"
-  admin_username         = var.admin_username
-  network_interface_ids  = [azurerm_network_interface.web2_nic.id]
+  name                  = "vm-web2-${var.environment_name}"
+  location              = azurerm_resource_group.rg.location
+  resource_group_name   = azurerm_resource_group.rg.name
+  size                  = "Standard_B1s"
+  admin_username        = var.admin_username
+  network_interface_ids = [azurerm_network_interface.web2_nic.id]
 
   admin_ssh_key {
     username   = var.admin_username
@@ -223,11 +223,11 @@ resource "azurerm_network_interface_backend_address_pool_association" "web2_nic_
 }
 
 resource "azurerm_linux_virtual_machine" "data_vm" {
-  name                = "vm-data-${var.environment_name}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  size                = "Standard_DC1ds_v3"
-  admin_username      = var.admin_username
+  name                  = "vm-data-${var.environment_name}"
+  location              = azurerm_resource_group.rg.location
+  resource_group_name   = azurerm_resource_group.rg.name
+  size                  = "Standard_DC1ds_v3"
+  admin_username        = var.admin_username
   network_interface_ids = [azurerm_network_interface.data_nic.id]
 
   admin_ssh_key {
@@ -291,8 +291,8 @@ resource "azurerm_lb_rule" "lbr_http" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "web_nic_bp_assoc" {
-  network_interface_id   = azurerm_network_interface.web_nic.id
-  ip_configuration_name  = "ipconfig1"
+  network_interface_id    = azurerm_network_interface.web_nic.id
+  ip_configuration_name   = "ipconfig1"
   backend_address_pool_id = azurerm_lb_backend_address_pool.bp_web.id
 }
 
