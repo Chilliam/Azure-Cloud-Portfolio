@@ -30,7 +30,8 @@ Study tools: a self-contained offline AZ-104 quiz app (HTML) and an Excel study 
 | 4 | **Monitoring & Cost Management** | Log Analytics, an alert proven to actually fire under real load, a custom dashboard, and a cost optimization case study with real numbers | [`04-monitoring-cost/`](./04-monitoring-cost/README.md) |
 | 5 | **Automation** | Bulk user provisioning (Azure CLI) and scheduled VM start/stop via Azure Automation with a system-assigned managed identity — no stored credentials anywhere | [`05-automation/`](./05-automation/README.md) |
 | — | **Terraform Drift Reconciliation** | Audited the live environment against Terraform state after Projects 4 and 5 introduced drift, and reconciled every resource back into code via `terraform import` | [`03-infrastructure-as-code/terraform/RECONCILIATION.md`](./03-infrastructure-as-code/terraform/RECONCILIATION.md) |
-
+| 6 | **Backup & Disaster Recovery** | Recovery Services Vault, a real backup + verified restore, RTO/RPO analysis with observed timings | [`06-backup-dr/`](./06-backup-dr/README.md) |
+| 7 | **CI/CD Pipeline** | GitHub Actions running Terraform plan/apply with OIDC authentication — no stored secrets | [`07-cicd-pipeline/`](./07-cicd-pipeline/README.md) |
 ---
 
 ## How These Projects Connect
