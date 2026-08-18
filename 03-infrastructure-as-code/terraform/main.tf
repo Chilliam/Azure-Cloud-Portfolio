@@ -54,17 +54,6 @@ resource "azurerm_network_security_group" "nsg_web" {
     destination_address_prefix = "*"
   }
 
-  security_rule {
-    name                       = "Allow-SSH"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "22"
-    source_address_prefix      = "Internet"
-    destination_address_prefix = "*"
-  }
 }
 
 resource "azurerm_network_security_group" "nsg_data" {
@@ -168,7 +157,12 @@ resource "azurerm_linux_virtual_machine" "web_vm" {
     sku       = "22_04-lts-gen2"
     version   = "latest"
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
+
 
 resource "azurerm_network_interface" "web2_nic" {
   name                = "vm-web2-${var.environment_name}-nic"
@@ -186,7 +180,7 @@ resource "azurerm_linux_virtual_machine" "web2_vm" {
   name                  = "vm-web2-${var.environment_name}"
   location              = azurerm_resource_group.rg.location
   resource_group_name   = azurerm_resource_group.rg.name
-  size                  = "Standard_B1s"
+  size                  = "Standard_DC1ds_v3"
   admin_username        = var.admin_username
   network_interface_ids = [azurerm_network_interface.web2_nic.id]
 
@@ -207,13 +201,6 @@ resource "azurerm_linux_virtual_machine" "web2_vm" {
     version   = "latest"
   }
 
-  custom_data = base64encode(<<-EOF
-    #!/bin/bash
-    apt update
-    apt install -y nginx
-    echo "<h1>Server 2 - vm-web2-${var.environment_name}</h1>" > /var/www/html/index.nginx-debian.html
-  EOF
-  )
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "web2_nic_bp_assoc" {
@@ -290,12 +277,12 @@ resource "azurerm_lb_rule" "lbr_http" {
   probe_id                       = azurerm_lb_probe.hp_http.id
 }
 
+
 resource "azurerm_network_interface_backend_address_pool_association" "web_nic_bp_assoc" {
   network_interface_id    = azurerm_network_interface.web_nic.id
   ip_configuration_name   = "ipconfig1"
   backend_address_pool_id = azurerm_lb_backend_address_pool.bp_web.id
 }
-
 
 resource "azurerm_public_ip" "natgw_pip" {
   name                = "pip-natgw-web-${var.environment_name}"
@@ -304,19 +291,16 @@ resource "azurerm_public_ip" "natgw_pip" {
   allocation_method   = "Static"
   sku                 = "Standard"
 }
-
 resource "azurerm_nat_gateway" "natgw_web" {
   name                = "natgw-web-${var.environment_name}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   sku_name            = "Standard"
 }
-
 resource "azurerm_nat_gateway_public_ip_association" "natgw_pip_assoc" {
   nat_gateway_id       = azurerm_nat_gateway.natgw_web.id
   public_ip_address_id = azurerm_public_ip.natgw_pip.id
 }
-
 resource "azurerm_subnet_nat_gateway_association" "web_natgw_assoc" {
   subnet_id      = azurerm_subnet.web.id
   nat_gateway_id = azurerm_nat_gateway.natgw_web.id
