@@ -43,3 +43,74 @@ resource "azurerm_bastion_host" "bastion_dev" {
     public_ip_address_id = azurerm_public_ip.bastion_pip.id
   }
 }
+
+
+resource "azurerm_monitor_private_link_scope" "ampls_project4" {
+  name                  = "ampls-project4"
+  resource_group_name   = azurerm_resource_group.rg.name
+  ingestion_access_mode = "PrivateOnly"
+}
+
+resource "azurerm_monitor_private_link_scoped_service" "law_connection" {
+  name                = "law-connection-scoped"
+  resource_group_name = azurerm_resource_group.rg.name
+  scope_name          = azurerm_monitor_private_link_scope.ampls_project4.name
+  linked_resource_id  = azurerm_log_analytics_workspace.law_project4.id
+}
+
+resource "azurerm_private_dns_zone" "privatelink_oms" {
+  name                = "privatelink.oms.opinsights.azure.com"
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_private_dns_zone" "privatelink_ods" {
+  name                = "privatelink.ods.opinsights.azure.com"
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "oms_vnet_link" {
+  name                  = "link-to-vnet-dev"
+  resource_group_name   = azurerm_resource_group.rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_oms.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+  registration_enabled  = false
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "ods_vnet_link" {
+  name                  = "link-to-vnet-dev"
+  resource_group_name   = azurerm_resource_group.rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_ods.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+  registration_enabled  = false
+}
+
+resource "azurerm_private_endpoint" "pe_law_project4" {
+  name                = "pe-law-project4"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  subnet_id           = azurerm_subnet.privatelink_subnet.id
+
+  private_service_connection {
+    name                           = "law-connection"
+    private_connection_resource_id = azurerm_monitor_private_link_scope.ampls_project4.id
+    subresource_names              = ["azuremonitor"]
+    is_manual_connection           = false
+  }
+
+  private_dns_zone_group {
+    name = "default-zone-group"
+    private_dns_zone_ids = [
+      azurerm_private_dns_zone.privatelink_oms.id,
+      azurerm_private_dns_zone.privatelink_ods.id,
+    ]
+  }
+}
+
+
+resource "azurerm_log_analytics_workspace" "law_project4" {
+  name                = "law-project4-dev"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
